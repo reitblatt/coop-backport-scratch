@@ -1,0 +1,16 @@
+name: Probe
+on:
+  pull_request_target:
+    types: [labeled, closed]
+  pull_request:
+    types: [labeled]
+  push:
+    branches: [main]
+permissions: {}
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "$EVENT"
+        env:
+          EVENT: ${{ github.event_name }}
