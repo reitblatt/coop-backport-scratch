@@ -4,6 +4,7 @@ category-template: '### $TITLE'
 change-template: '$BODY ([#$NUMBER]($URL) by [@$AUTHOR]($AUTHOR_URL))'
 no-changes-template: ''
 sync-labels: true
+filter-by-commitish: true
 # Ignore instructions, empty bullets, and subsequent sections.
 autolabeler:
   - labels: [has-release-notes]

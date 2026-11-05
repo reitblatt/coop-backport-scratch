@@ -35,7 +35,7 @@ concurrency:
 jobs:
   backport:
     if: >-
-      github.repository == 'roostorg/coop' &&
+      github.repository == 'reitblatt/coop-backport-scratch' &&
       (github.event_name != 'pull_request_target' ||
        (github.event.pull_request.merged == true &&
         github.event.pull_request.base.ref == 'main' &&
@@ -43,8 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
-      contents: read
-      pull-requests: read
+      contents: write # scratch only: stands in for the app token
+      pull-requests: write
+      issues: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -75,28 +76,17 @@ jobs:
           jq -r '"push=" + ((.target.exists | not) or (.backports + .failures | length > 0) | tostring)' \
             "$RUNNER_TEMP/security-backport/plan.json" >> "$GITHUB_OUTPUT"
 
-      # An app token, unlike GITHUB_TOKEN, triggers CI on the PRs it opens.
-      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-        if: steps.plan.outputs.push == 'true'
-        id: app
-        with:
-          app-id: ${{ vars.BACKPORT_APP_ID }}
-          private-key: ${{ secrets.BACKPORT_APP_PRIVATE_KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-          permission-issues: write
-
       - name: Push branches, open PRs and report failures
         if: steps.plan.outputs.push == 'true'
         env:
-          GH_TOKEN: ${{ steps.app.outputs.token }}
-          BACKPORT_PUSH_URL: https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
+          GH_TOKEN: ${{ github.token }}
+          BACKPORT_PUSH_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
         run: node scripts/security-backport.mjs publish
 
   draft:
     needs: backport
     if: >-
-      always() && github.repository == 'roostorg/coop' &&
+      always() && github.repository == 'reitblatt/coop-backport-scratch' &&
       (github.event_name != 'pull_request_target' ||
        (github.event.action == 'closed' && github.event.pull_request.merged == true &&
         startsWith(github.event.pull_request.base.ref, 'release/')))
