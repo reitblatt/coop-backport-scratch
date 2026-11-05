@@ -1,3 +1,4 @@
+// Scratch test: security fix labelled after merge.
 import {
   SpanKind,
   SpanStatusCode,
