@@ -1,3 +1,4 @@
+// Scratch test: security fix labelled before merge.
 import { type JsonObject, type JsonValue, type ReadonlyDeep } from 'type-fest';
 import { v1 as uuidv1 } from 'uuid';
 
