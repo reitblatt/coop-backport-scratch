@@ -1,3 +1,4 @@
+// Scratch test: security fix after 1.3.0.
 import { ProxyTracerProvider } from '@opentelemetry/api';
 import { vi } from 'vitest';
 
